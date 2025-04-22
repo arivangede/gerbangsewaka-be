@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  output = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -16,20 +16,21 @@ datasource db {
 
 model User {
   id        String      @id @default(uuid())
-  name      String
-  email     String   @unique
+  username  String
+  full_name String?
+  email     String      @unique
   emailVerified DateTime?
   image     String?
   phone     String?
   phoneVerified DateTime?
   password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   roles     UserRole[]
 }
 
 model Role {
-  id        String      @id @default(uuid())
+  id        Int      @id @default(autoincrement())
   name      String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -39,7 +40,7 @@ model Role {
 model UserRole {
   id        String      @id @default(uuid())
   userId    String
-  roleId    String
+  roleId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -52,42 +53,51 @@ model Area{
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  streetLightings StreetLighting[]
+  streetLightGroup StreetLightGroup[]
 }
 
 model RoadFunction{
-  id        String      @id @default(uuid())
+  id        Int      @id @default(autoincrement())
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  streetLightings StreetLighting[]
+  streetLight StreetLight[]
 }
 
-model StreetLighting {
+model StreetLight {
   id         Int      @id @default(autoincrement())
   name        String
   latitude   Float
   longitude  Float
-  roadfunction_id String
-  area_id       String
-  group      String?
+  roadfunction_id Int
+  group_id      Int?
   poleType   String?
   poleHeight String?
   poleMaterial String?
-  status     StreetLightingStatus
+  status     StreetLightStatus
   location    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  streetLightingAccessory StreetLightingAccessory[]
+  streetLightAccessory StreetLightAccessory[]
   lamp       Lamp[]
-  area       Area      @relation(fields: [area_id], references: [id])
   roadFunction RoadFunction @relation(fields: [roadfunction_id], references: [id])
+  streetLightGroup StreetLightGroup? @relation(fields: [group_id], references: [id])
 }
 
-enum StreetLightingStatus {
+enum StreetLightStatus {
   Active
   Inactive
   UnderMaintenance
+}
+
+model StreetLightGroup {
+  id       Int      @id @default(autoincrement())
+  name      String
+  area_id   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  streetLight StreetLight[]
+  area     Area @relation(fields: [area_id], references: [id])
 }
 
 model Lamp{
@@ -98,14 +108,14 @@ model Lamp{
   power String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  streetLighting StreetLighting @relation(fields: [streetlighting_id], references: [id])
+  streetLight StreetLight @relation(fields: [streetlighting_id], references: [id])
 }
 
-model StreetLightingAccessory {
+model StreetLightAccessory {
   id Int @id @default(autoincrement())
   name String
   streetlighting_id Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  streetLighting StreetLighting @relation(fields: [streetlighting_id], references: [id])
+  streetLight StreetLight @relation(fields: [streetlighting_id], references: [id])
 }
