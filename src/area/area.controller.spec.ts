@@ -42,8 +42,16 @@ describe('AreaController', () => {
   describe('getAllAreas', () => {
     it('should return an array of areas', async () => {
       const mockAreas = [
-        { id: '1', name: 'Area 1', streetLightGroup: [] },
-        { id: '2', name: 'Area 2', streetLightGroup: [] },
+        { 
+          id: 'e1f2a3b4-c5d6-4e7f-8g9h-0i1j2k3l4m5n', 
+          name: 'Denpasar', 
+          streetLightGroup: [] 
+        },
+        { 
+          id: 'f2e3d4c5-b6a7-8g9h-0i1j-2k3l4m5n6o7p', 
+          name: 'Gianyar', 
+          streetLightGroup: [] 
+        },
       ];
 
       mockAreaService.getAllAreas.mockResolvedValue(mockAreas);
@@ -55,20 +63,30 @@ describe('AreaController', () => {
   });
 
   describe('getAreaById', () => {
+    const mockUUID = 'e1f2a3b4-c5d6-4e7f-8g9h-0i1j2k3l4m5n';
+
     it('should return a single area', async () => {
-      const mockArea = { id: '1', name: 'Area 1', streetLightGroup: [] };
+      const mockArea = { 
+        id: mockUUID, 
+        name: 'Denpasar', 
+        streetLightGroup: [] 
+      };
       mockAreaService.getAreaById.mockResolvedValue(mockArea);
 
-      const result = await controller.getAreaById('1');
+      const result = await controller.getAreaById(mockUUID);
       expect(result).toEqual(mockArea);
-      expect(service.getAreaById).toHaveBeenCalledWith('1');
+      expect(service.getAreaById).toHaveBeenCalledWith(mockUUID);
     });
   });
 
   describe('createArea', () => {
     it('should create a new area', async () => {
-      const createAreaDto: CreateAreaDto = { name: 'New Area' };
-      const mockArea = { id: '1', ...createAreaDto, streetLightGroup: [] };
+      const createAreaDto: CreateAreaDto = { name: 'Badung' };
+      const mockArea = { 
+        id: 'g3h4i5j6-k7l8-9m0n-1o2p-3q4r5s6t7u8v', 
+        ...createAreaDto, 
+        streetLightGroup: [] 
+      };
 
       mockAreaService.createArea.mockResolvedValue(mockArea);
 
@@ -79,26 +97,38 @@ describe('AreaController', () => {
   });
 
   describe('updateArea', () => {
+    const mockUUID = 'e1f2a3b4-c5d6-4e7f-8g9h-0i1j2k3l4m5n';
+
     it('should update an existing area', async () => {
-      const updateAreaDto: UpdateAreaDto = { name: 'Updated Area' };
-      const mockArea = { id: '1', name: 'Updated Area', streetLightGroup: [] };
+      const updateAreaDto: UpdateAreaDto = { name: 'Denpasar Selatan' };
+      const mockArea = { 
+        id: mockUUID, 
+        name: 'Denpasar Selatan', 
+        streetLightGroup: [] 
+      };
 
       mockAreaService.updateArea.mockResolvedValue(mockArea);
 
-      const result = await controller.updateArea('1', updateAreaDto);
+      const result = await controller.updateArea(mockUUID, updateAreaDto);
       expect(result).toEqual(mockArea);
-      expect(service.updateArea).toHaveBeenCalledWith('1', updateAreaDto);
+      expect(service.updateArea).toHaveBeenCalledWith(mockUUID, updateAreaDto);
     });
   });
 
   describe('deleteArea', () => {
+    const mockUUID = 'e1f2a3b4-c5d6-4e7f-8g9h-0i1j2k3l4m5n';
+
     it('should delete an area', async () => {
-      const mockArea = { id: '1', name: 'Area', streetLightGroup: [] };
+      const mockArea = { 
+        id: mockUUID, 
+        name: 'Denpasar', 
+        streetLightGroup: [] 
+      };
       mockAreaService.deleteArea.mockResolvedValue(mockArea);
 
-      const result = await controller.deleteArea('1');
+      const result = await controller.deleteArea(mockUUID);
       expect(result).toEqual(mockArea);
-      expect(service.deleteArea).toHaveBeenCalledWith('1');
+      expect(service.deleteArea).toHaveBeenCalledWith(mockUUID);
     });
   });
 });
