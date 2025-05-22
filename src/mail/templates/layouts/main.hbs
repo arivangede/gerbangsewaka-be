@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>{{appName}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Load Montserrat from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet" />
+</head>
+
+<body style="margin:0; padding:0; background-color:#f3f3f3; font-family: 'Segoe UI', Roboto, sans-serif;">
+
+  <!-- Header -->
+  <div style="background-color:#c62828; padding:24px; text-align:center; color:#ffffff;">
+    <h1 style="margin:0; font-size:24px; font-family:'Montserrat', 'Segoe UI', sans-serif;">
+      {{appName}}
+    </h1>
+  </div>
+
+  <!-- Content -->
+  <div
+    style="max-width:600px; margin:20px auto; background:#ffffff; padding:32px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+    {{> @partial-block}}
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center; padding:16px; font-size:12px; color:#999999;">
+    &copy; {{year}} {{appName}}. All rights reserved.
+  </div>
+
+</body>
+
+</html>

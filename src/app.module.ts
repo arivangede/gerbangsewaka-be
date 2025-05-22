@@ -12,6 +12,7 @@ import { StreetLightModule } from './street-light/street-light.module';
 import { StreetLightGroupModule } from './street-light-group/street-light-group.module';
 import { LampModule } from './lamp/lamp.module';
 import { StreetLightAccessoryModule } from './street-light-accessory/street-light-accessory.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { StreetLightAccessoryModule } from './street-light-accessory/street-ligh
     StreetLightGroupModule,
     LampModule,
     StreetLightAccessoryModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

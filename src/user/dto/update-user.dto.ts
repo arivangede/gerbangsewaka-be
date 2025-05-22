@@ -3,9 +3,6 @@ import { IsDataURI, IsString } from 'class-validator';
 
 class BaseUserDto {
   @IsString()
-  username: string;
-
-  @IsString()
   full_name: string;
 
   @IsString()
