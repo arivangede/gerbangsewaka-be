@@ -16,17 +16,27 @@ datasource db {
 
 model User {
   id        String      @id @default(uuid())
-  username  String
-  full_name String?
+  full_name String
   email     String      @unique
   emailVerified DateTime?
-  image     String?
+  profile_picture     String?
   phone     String?
   phoneVerified DateTime?
   password  String
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
-  roles     UserRole[]
+  userRole     UserRole?
+  userVerificationToken UserVerificationToken?
+}
+
+model UserVerificationToken {
+  id        String      @id @default(uuid())
+  userId    String      @unique
+  token     String      @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id])
 }
 
 model Role {
@@ -39,7 +49,7 @@ model Role {
 
 model UserRole {
   id        String      @id @default(uuid())
-  userId    String
+  userId    String    @unique
   roleId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

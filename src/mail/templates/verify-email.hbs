@@ -1,0 +1,32 @@
+{{#> main}}
+<h2 style="color: #c62828; font-size: 20px; margin-top: 0;">Halo, {{user}}</h2>
+
+<p style="font-size: 16px; color: #333;">
+  Terima kasih telah mendaftar di <strong>{{appName}}</strong>. Untuk menyelesaikan pendaftaran, silakan klik tombol di
+  bawah ini untuk memverifikasi alamat email Anda.
+</p>
+
+<div style="text-align: center; margin: 32px 0;">
+  <a href="{{verificationUrl}}"
+    style="display: inline-block; background-color: #c62828; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold;">
+    Verifikasi Email
+  </a>
+</div>
+
+<p style="font-size: 14px; color: #555;">
+  Jika Anda tidak mendaftar di {{appName}}, abaikan email ini.
+</p>
+
+<p style="font-size: 14px; color: #555; margin-top: 32px;">
+  Terima kasih,<br />
+  Tim {{appName}}
+</p>
+
+<p style="font-size: 14px; color: #555;">
+  Tidak dapat menekan tombol diatas?, salin dan tempel URL berikut ke browser Anda:
+</p>
+
+<p style="word-break: break-all; font-size: 14px; color: #555;">
+  {{verificationUrl}}
+</p>
+{{/main}}

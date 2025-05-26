@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -26,6 +31,20 @@ export class RoleService {
         `Role with id ${id} not found`,
         HttpStatus.NOT_FOUND,
       );
+    }
+
+    return role;
+  };
+
+  getRoleByName = async (name: string) => {
+    const role = await this.prisma.role.findUnique({
+      where: {
+        name,
+      },
+    });
+
+    if (!role) {
+      throw new NotFoundException('This role name is not found');
     }
 
     return role;
