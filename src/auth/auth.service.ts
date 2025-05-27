@@ -133,7 +133,7 @@ export class AuthService {
       );
     }
 
-    const payload = { sub: user.id, role: user.userRole?.role.id };
+    const payload = { sub: user.id };
     const token = this.jwtService.sign(payload);
 
     return { message: 'Sign-In Berhasil', token, user };
