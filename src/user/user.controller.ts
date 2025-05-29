@@ -1,10 +1,14 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRoleService } from 'src/user-role/user-role.service';
 import { RoleService } from 'src/role/role.service';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RoleGuard } from 'src/role/role.guard';
+import { Roles } from 'src/role/role.decorator';
 
 @Controller('users')
+@UseGuards(AuthGuard, RoleGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -13,6 +17,7 @@ export class UserController {
   ) {}
 
   @Get()
+  @Roles('admin', 'superadmin')
   async getAllUsers() {
     return this.userService.getAllUsers();
   }
@@ -23,11 +28,13 @@ export class UserController {
   }
 
   @Get('by-email/:email')
+  @Roles('admin', 'superadmin')
   async getUserByEmail(@Param('email') email: string) {
     return this.userService.getUserByEmail(email);
   }
 
   @Post('create')
+  @Roles('admin', 'superadmin')
   async createUser(@Body() data: CreateUserDto) {
     const newUser = await this.userService.createUser(data);
 
