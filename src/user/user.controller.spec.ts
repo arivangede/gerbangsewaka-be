@@ -4,9 +4,18 @@ import { UserService } from './user.service';
 import { UserRoleService } from 'src/user-role/user-role.service';
 import { RoleService } from 'src/role/role.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RoleGuard } from 'src/role/role.guard';
+import { AuthStrategy } from 'src/auth/auth.strategy';
+import { JwtService } from '@nestjs/jwt';
+import { Reflector } from '@nestjs/core';
+import { PassportModule } from '@nestjs/passport';
+import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 
 describe('UserController', () => {
   let controller: UserController;
+  let authGuard: AuthGuard;
+  let roleGuard: RoleGuard;
 
   const mockUserService = {
     getAllUsers: jest.fn(),
@@ -23,23 +32,89 @@ describe('UserController', () => {
     getRoleByName: jest.fn(),
   };
 
+  const mockJwtService = {
+    verifyAsync: jest.fn().mockResolvedValue({ sub: '1' }),
+  };
+
+  const mockReflector = {
+    get: jest.fn().mockReturnValue(['admin']),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
       controllers: [UserController],
       providers: [
         { provide: UserService, useValue: mockUserService },
         { provide: UserRoleService, useValue: mockUserRoleService },
         { provide: RoleService, useValue: mockRoleService },
+        { provide: JwtService, useValue: mockJwtService },
+        { provide: Reflector, useValue: mockReflector },
+        AuthStrategy,
+        AuthGuard,
+        RoleGuard,
       ],
     }).compile();
 
     controller = module.get<UserController>(UserController);
+    authGuard = module.get<AuthGuard>(AuthGuard);
+    roleGuard = module.get<RoleGuard>(RoleGuard);
 
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  it('should block unauthenticated access to profile', async () => {
+    const context: ExecutionContext = {
+      switchToHttp: () => ({
+        getRequest: () => ({
+          headers: {}, // No token
+        }),
+        getResponse: () => ({}),
+      }),
+      getHandler: () => ({}),
+      getClass: () => ({}),
+    } as ExecutionContext;
+
+    await expect(authGuard.canActivate(context)).rejects.toThrow(
+      UnauthorizedException,
+    );
+  });
+
+  it('should block non-admin access to admin route', async () => {
+    const context: ExecutionContext = {
+      switchToHttp: () => ({
+        getRequest: () => ({
+          headers: { authorization: 'Bearer valid-token' },
+          user: {
+            id: '1',
+            email: 'test@example.com',
+            userRole: {
+              role: {
+                name: 'user', // Not an admin
+              },
+            },
+          },
+        }),
+        getResponse: () => ({}),
+      }),
+      getHandler: () => ({}),
+      getClass: () => ({}),
+    } as ExecutionContext;
+
+    const canActivate = await roleGuard.canActivate(context);
+    expect(canActivate).toBe(false); // Should fail because user is not admin
+    expect(mockReflector.get).toHaveBeenCalledWith(
+      'roles',
+      context.getHandler(),
+    );
   });
 
   describe('getAllUsers', () => {
