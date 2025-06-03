@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRoleService } from 'src/user-role/user-role.service';
@@ -6,6 +14,7 @@ import { RoleService } from 'src/role/role.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RoleGuard } from 'src/role/role.guard';
 import { Roles } from 'src/role/role.decorator';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 @UseGuards(AuthGuard, RoleGuard)
@@ -49,6 +58,20 @@ export class UserController {
       await this.userRoleService.createUserRole(dto);
     }
 
-    return newUser;
+    return {
+      message: 'User baru berhasil dibuat.',
+    };
+  }
+
+  @Patch('update/:userId')
+  async updateUser(
+    @Param('userId') userId: string,
+    @Body() data: UpdateUserDto,
+  ) {
+    await this.userService.updateUser(userId, data);
+
+    return {
+      message: 'Data user berhasil diperbarui.',
+    };
   }
 }

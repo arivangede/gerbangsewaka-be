@@ -1,8 +1,9 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { Role, User, UserRole } from '@prisma/client';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 type UserWithRole = User & {
   userRole: (UserRole & { role: Role }) | null;
@@ -82,6 +83,43 @@ export class UserService {
     return this.prisma.user.update({
       where: { id: userId },
       data: { emailVerified: new Date() },
+    });
+  };
+
+  updateUser = async (userId: string, data: UpdateUserDto) => {
+    const user = await this.getUserById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User tidak ditemukan');
+    }
+
+    const updatedData: UpdateUserDto = {};
+
+    if (data.email) {
+      updatedData.email = data.email;
+    }
+
+    if (data.full_name) {
+      updatedData.full_name = data.full_name;
+    }
+
+    if (data.profile_picture) {
+      updatedData.profile_picture = data.profile_picture;
+    }
+
+    if (data.phone) {
+      updatedData.phone = data.phone;
+    }
+
+    if (data.password) {
+      updatedData.password = await bcrypt.hash(data.password, 10);
+    }
+
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: updatedData,
     });
   };
 }

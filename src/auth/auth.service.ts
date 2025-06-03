@@ -1,4 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -7,6 +14,8 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { randomBytes } from 'crypto';
 import { MailService } from 'src/mail/mail.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -69,39 +78,46 @@ export class AuthService {
 
     const emailToken = randomBytes(32).toString('hex');
 
-    await this.prisma.userVerificationToken.create({
+    await this.prisma.userToken.create({
       data: {
         userId: user.id,
         token: emailToken,
+        type: 'EMAIL_VERIFICATION',
       },
     });
 
     const verificationUrl = `${process.env.APP_FRONTEND_URL}/auth/verify-email?token=${emailToken}`;
 
-    await this.mailService.sendMail(
-      user.email,
-      'Email Verification',
-      'verify-email',
-      { user: user.full_name, verificationUrl: verificationUrl },
-    );
+    try {
+      await this.mailService.sendMail(
+        user.email,
+        'Email Verification',
+        'verify-email',
+        { user: user.full_name, verificationUrl: verificationUrl },
+      );
+    } catch (error) {
+      console.error('sendMail error: ', error);
+      throw new InternalServerErrorException(
+        'Email gagal dikirim, coba lagi nanti',
+      );
+    }
   };
 
   verifyEmail = async (token: string) => {
-    const verificationToken =
-      await this.prisma.userVerificationToken.findUnique({
-        where: { token },
-      });
+    const verificationToken = await this.prisma.userToken.findUnique({
+      where: { token, type: 'EMAIL_VERIFICATION' },
+    });
 
     if (!verificationToken) {
       throw new HttpException(
-        'Invalid or expired token',
+        'Token Invalid atau sudah kedaluwarsa.',
         HttpStatus.BAD_REQUEST,
       );
     }
 
     await this.userService.verifyUser(verificationToken.userId);
 
-    await this.prisma.userVerificationToken.delete({
+    await this.prisma.userToken.delete({
       where: { id: verificationToken.id },
     });
 
@@ -137,5 +153,66 @@ export class AuthService {
     const token = this.jwtService.sign(payload);
 
     return { message: 'Sign-In Berhasil', token, user };
+  };
+
+  forgotPassword = async (data: ForgotPasswordDto) => {
+    const user = await this.userService.getUserByEmail(data.email);
+
+    if (!user) {
+      throw new NotFoundException('Akun dengan email ini tidak ditemukan.');
+    }
+
+    const emailToken = randomBytes(32).toString('hex');
+
+    await this.prisma.userToken.create({
+      data: {
+        userId: user.id,
+        token: emailToken,
+        type: 'PASSWORD_RESET',
+      },
+    });
+
+    const resetPasswordUrl = `${process.env.APP_FRONTEND_URL}/auth/reset-password?token=${emailToken}`;
+
+    try {
+      await this.mailService.sendMail(
+        user.email,
+        'Reset Password',
+        'reset-password',
+        { user: user.full_name, resetPasswordUrl: resetPasswordUrl },
+      );
+    } catch (error) {
+      console.error('sendMail error: ', error);
+      throw new InternalServerErrorException(
+        'Email gagal dikirim, coba lagi nanti',
+      );
+    }
+  };
+
+  resetPassword = async (token: string, data: ResetPasswordDto) => {
+    const resetPasswordToken = await this.prisma.userToken.findUnique({
+      where: {
+        token,
+        type: 'PASSWORD_RESET',
+      },
+    });
+
+    if (!resetPasswordToken) {
+      throw new BadRequestException('Token Invalid atau sudah kedaluwarsa.');
+    }
+
+    const user = await this.userService.getUserById(resetPasswordToken.userId);
+
+    if (!user) {
+      throw new NotFoundException('User tidak ditemukan');
+    }
+
+    await this.userService.updateUser(user.id, data);
+
+    await this.prisma.userToken.delete({
+      where: {
+        id: resetPasswordToken.id,
+      },
+    });
   };
 }

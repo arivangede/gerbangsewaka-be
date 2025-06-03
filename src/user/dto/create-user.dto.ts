@@ -8,7 +8,7 @@ export class CreateUserDto {
   email: string;
 
   @IsDataURI()
-  image?: string;
+  profile_picture?: string;
 
   @IsString()
   phone?: string;

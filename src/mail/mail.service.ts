@@ -13,11 +13,13 @@ export class MailService {
     await this.mailerService.sendMail({
       to,
       subject,
+      from: process.env.MAIL_FROM,
       template: templateName,
       context: {
         ...context,
         appName: process.env.APP_NAME,
         year: new Date().getFullYear(),
+        companyName: process.env.COMPANY_NAME,
       },
     });
   }
