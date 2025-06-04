@@ -25,8 +25,10 @@ model User {
   password  String
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+
   userRole     UserRole?
   userToken UserToken[]
+  userArea UserAreaAccess[]
 }
 
 model UserToken {
@@ -64,74 +66,75 @@ model UserRole {
   role      Role       @relation(fields: [roleId], references: [id])
 }
 
-model Area{
-  id        String      @id @default(uuid())
-  name      String
+model UserAreaAccess {
+  id Int @id @default(autoincrement())
+  userId String
+  districtId Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  streetLightGroup StreetLightGroup[]
+
+  user User @relation(fields: [userId], references: [id])
+  district District @relation(fields: [districtId], references: [id])
 }
 
-model RoadFunction{
+model Zone {
   id        Int      @id @default(autoincrement())
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  streetLight StreetLight[]
+
+  polePoints PolePoint[]
 }
 
-model StreetLight {
+model Function{
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  polePoints PolePoint[]
+}
+
+model District{
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  polePoints PolePoint[]
+  userAccess UserAreaAccess[]
+}
+
+model Group {
   id         Int      @id @default(autoincrement())
-  name        String
+  code       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  polePoints PolePoint[]
+}
+
+model PolePoint {
+  id         String      @id @default(uuid())
+  type       PolePointType
+  streetName String
+  poleCode   String
+  power      String
   latitude   Float
   longitude  Float
-  roadfunction_id Int
-  group_id      Int?
-  poleType   String?
-  poleHeight String?
-  poleMaterial String?
-  status     StreetLightStatus
-  location    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  streetLightAccessory StreetLightAccessory[]
-  lamp       Lamp[]
-  roadFunction RoadFunction @relation(fields: [roadfunction_id], references: [id])
-  streetLightGroup StreetLightGroup? @relation(fields: [group_id], references: [id])
+
+  zoneId     Int
+  functionId Int
+  districtId Int
+  groupId    Int
+
+  zone Zone @relation(fields: [zoneId], references: [id])
+  function Function @relation(fields: [functionId], references: [id])
+  district District @relation(fields: [districtId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
 }
 
-enum StreetLightStatus {
-  Active
-  Inactive
-  UnderMaintenance
-}
-
-model StreetLightGroup {
-  id       Int      @id @default(autoincrement())
-  name      String
-  area_id   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  streetLight StreetLight[]
-  area     Area @relation(fields: [area_id], references: [id])
-}
-
-model Lamp{
-  id Int @id @default(autoincrement())
-  streetlighting_id Int
-  brand String
-  type String
-  power String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  streetLight StreetLight @relation(fields: [streetlighting_id], references: [id])
-}
-
-model StreetLightAccessory {
-  id Int @id @default(autoincrement())
-  name String
-  streetlighting_id Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  streetLight StreetLight @relation(fields: [streetlighting_id], references: [id])
+enum PolePointType {
+  STREET_LIGHT
+  PANEL
 }

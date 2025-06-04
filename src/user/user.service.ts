@@ -25,7 +25,7 @@ export class UserService {
   };
 
   getUserById = async (id: string) => {
-    return this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
         userRole: {
@@ -35,6 +35,12 @@ export class UserService {
         },
       },
     });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   };
 
   getUserByEmail = async (email: string): Promise<UserWithRole | null> => {

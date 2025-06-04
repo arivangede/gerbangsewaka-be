@@ -13,6 +13,12 @@ import { StreetLightGroupModule } from './street-light-group/street-light-group.
 import { LampModule } from './lamp/lamp.module';
 import { StreetLightAccessoryModule } from './street-light-accessory/street-light-accessory.module';
 import { MailModule } from './mail/mail.module';
+import { UserAreaAccessModule } from './user-area-access/user-area-access.module';
+import { ZoneModule } from './zone/zone.module';
+import { FunctionModule } from './function/function.module';
+import { DistrictModule } from './district/district.module';
+import { GroupModule } from './group/group.module';
+import { PolePointModule } from './pole-point/pole-point.module';
 
 @Module({
   imports: [
@@ -28,6 +34,12 @@ import { MailModule } from './mail/mail.module';
     LampModule,
     StreetLightAccessoryModule,
     MailModule,
+    UserAreaAccessModule,
+    ZoneModule,
+    FunctionModule,
+    DistrictModule,
+    GroupModule,
+    PolePointModule,
   ],
   controllers: [AppController],
   providers: [AppService],
