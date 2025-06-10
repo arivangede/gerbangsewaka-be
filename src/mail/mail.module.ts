@@ -15,8 +15,8 @@ import { join } from 'path';
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PASS,
         },
-        connectionTimeout: 20000,
-        socketTimeout: 20000,
+        connectionTimeout: 60000,
+        socketTimeout: 60000,
       },
       defaults: {
         from: `"${process.env.APP_NAME}" <${process.env.MAIL_FROM}>`,
