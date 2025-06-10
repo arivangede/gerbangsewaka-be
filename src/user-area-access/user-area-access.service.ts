@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AreaService } from 'src/area/area.service';
+import { DistrictService } from 'src/district/district.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { CreateAccessDto } from './dto/create-access.dto';
@@ -14,7 +14,7 @@ export class UserAreaAccessService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
-    private readonly areaService: AreaService,
+    private readonly districtService: DistrictService,
   ) {}
 
   getUserAreaAccessById = async (id: number) => {
@@ -39,7 +39,7 @@ export class UserAreaAccessService {
         userId: user.id,
       },
       include: {
-        area: {
+        district: {
           select: {
             name: true,
           },
@@ -65,7 +65,7 @@ export class UserAreaAccessService {
       );
     }
 
-    const area = await this.areaService.getAreaById(data.areaId);
+    const area = await this.districtService.getById(data.districtId);
     if (!area) {
       throw new NotFoundException('Area not found');
     }
@@ -73,7 +73,7 @@ export class UserAreaAccessService {
     const existingAccess = await this.prisma.userAreaAccess.findFirst({
       where: {
         userId: data.userId,
-        areaId: data.areaId,
+        districtId: data.districtId,
       },
     });
 
@@ -84,7 +84,7 @@ export class UserAreaAccessService {
     return this.prisma.userAreaAccess.create({
       data: {
         userId: data.userId,
-        areaId: data.areaId,
+        districtId: data.districtId,
       },
     });
   };

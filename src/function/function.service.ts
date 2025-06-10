@@ -65,4 +65,16 @@ export class FunctionService {
       },
     });
   };
+
+  upsert = async (name: string) => {
+    return this.prisma.function.upsert({
+      where: {
+        name,
+      },
+      update: {},
+      create: {
+        name,
+      },
+    });
+  };
 }

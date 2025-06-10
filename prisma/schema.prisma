@@ -79,7 +79,7 @@ model UserAreaAccess {
 
 model Zone {
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -88,7 +88,7 @@ model Zone {
 
 model Function{
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -97,7 +97,7 @@ model Function{
 
 model District{
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -107,7 +107,7 @@ model District{
 
 model Group {
   id         Int      @id @default(autoincrement())
-  code       String
+  code       String   @unique
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

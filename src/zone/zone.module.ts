@@ -7,5 +7,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
   imports: [PrismaModule],
   providers: [ZoneService],
   controllers: [ZoneController],
+  exports: [ZoneService],
 })
 export class ZoneModule {}

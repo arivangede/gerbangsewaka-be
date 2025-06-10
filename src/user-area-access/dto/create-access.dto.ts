@@ -5,5 +5,5 @@ export class CreateAccessDto {
   userId: string;
 
   @IsString()
-  areaId: string;
+  districtId: number;
 }

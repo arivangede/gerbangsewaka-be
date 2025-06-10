@@ -65,4 +65,16 @@ export class GroupService {
       },
     });
   };
+
+  upsert = async (code: string) => {
+    return this.prisma.group.upsert({
+      where: {
+        code,
+      },
+      update: {},
+      create: {
+        code,
+      },
+    });
+  };
 }

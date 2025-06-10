@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default async function functionSeeder(): Promise<string | null> {
-  const existing = await prisma.roadFunction.findFirst();
+  const existing = await prisma.function.findFirst();
   if (existing) return null; // skip seeder if data already exists
 
   const fungsi = [
@@ -17,7 +17,7 @@ export default async function functionSeeder(): Promise<string | null> {
     'Kolektor B',
   ];
 
-  await prisma.roadFunction.createMany({
+  await prisma.function.createMany({
     data: fungsi.map((name) => ({ name })),
   });
 

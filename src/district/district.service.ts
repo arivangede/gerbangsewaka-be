@@ -65,4 +65,16 @@ export class DistrictService {
       },
     });
   };
+
+  upsert = async (name: string) => {
+    return this.prisma.district.upsert({
+      where: {
+        name,
+      },
+      update: {},
+      create: {
+        name,
+      },
+    });
+  };
 }

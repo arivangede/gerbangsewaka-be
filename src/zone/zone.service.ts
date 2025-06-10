@@ -69,4 +69,16 @@ export class ZoneService {
       },
     });
   };
+
+  upsert = async (name: string) => {
+    return this.prisma.zone.upsert({
+      where: {
+        name,
+      },
+      update: {},
+      create: {
+        name,
+      },
+    });
+  };
 }
