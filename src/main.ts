@@ -22,7 +22,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3000',
       'https://hoppscotch.io',
-      'https://gerbangsewaka-web.vercel.app/',
+      'https://gerbangsewaka-web.vercel.app',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
